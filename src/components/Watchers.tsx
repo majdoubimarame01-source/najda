@@ -87,6 +87,15 @@ export function Watchers() {
     };
   }, [me?.circle_id, offline]);
 
+  // 4b. Victim side: my alert was closed elsewhere (a helper arrived) -> leave "alert mode".
+  //     On /silent and /sent the AlertClosed screen handles it; anywhere else, clear it now.
+  const myAlertStatus = useApp((s) => (s.myActiveAlertId ? s.alerts[s.myActiveAlertId]?.status : undefined));
+  useEffect(() => {
+    if (myAlertStatus !== 'resolved') return;
+    if (pathname === '/silent' || pathname === '/sent') return;
+    getApp().set({ myActiveAlertId: null });
+  }, [myAlertStatus, pathname]);
+
   // 5. Notification tap → helper map (or my own silent screen).
   const last = Notifications.useLastNotificationResponse();
   useEffect(() => {

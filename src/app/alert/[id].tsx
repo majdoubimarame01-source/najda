@@ -141,7 +141,10 @@ export default function AlertScreen() {
         </View>
         <Text style={[styles.bannerTitle, { textAlign: 'center', marginTop: 12 }]}>{victimName} is safe</Text>
         <Text style={[styles.sub, { textAlign: 'center', marginTop: 8 }]}>
-          Rani labes — the alert is closed and the location was deleted.
+          {arrivedNames.length
+            ? `${arrivedNames.map((n) => (n === me?.name ? 'You' : n)).join(' and ')} ${arrivedNames.length > 1 || arrivedNames[0] === me?.name ? 'are' : 'is'} with ${victimName}. `
+            : 'Rani labes — '}
+          The alert is closed and the location was deleted.
         </Text>
         <Btn title="Back home" variant="green" style={{ marginTop: 32 }} onPress={() => router.replace('/')} />
       </SafeAreaView>
