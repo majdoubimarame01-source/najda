@@ -1,5 +1,25 @@
 # najda — Your alert. Your safety.
 
+<p align="center">
+  <a href="https://expo.dev/artifacts/eas/DIGcCyrWLiT4JCIBzp4kYcV8BYU0pDLH2AFiMVA_s00.apk"><img alt="Download the APK for Android" src="https://img.shields.io/badge/Download-Android%20APK-E11D22?style=for-the-badge&logo=android&logoColor=white" height="56"></a>
+  &nbsp;
+  <a href="https://expo.dev/accounts/marame01/projects/najda/builds/0aa68754-fae7-4246-b997-4c4a57fab451"><img alt="Install page with QR code" src="https://img.shields.io/badge/Install-QR%20code-111315?style=for-the-badge&logo=expo&logoColor=white" height="56"></a>
+  &nbsp;
+  <a href="https://claude.ai/artifact/4WHZdKusnCEg9Fb8rVfoRe"><img alt="Pitch deck" src="https://img.shields.io/badge/Pitch-Deck-5A0B0E?style=for-the-badge" height="56"></a>
+</p>
+
+## 📥 [Download najda for Android (APK)](https://expo.dev/artifacts/eas/DIGcCyrWLiT4JCIBzp4kYcV8BYU0pDLH2AFiMVA_s00.apk)
+
+## 📱 [Install page with QR code (scan with your phone)](https://expo.dev/accounts/marame01/projects/najda/builds/0aa68754-fae7-4246-b997-4c4a57fab451)
+
+## 🎤 [Pitch deck](https://claude.ai/artifact/4WHZdKusnCEg9Fb8rVfoRe)
+
+> **Install:** open the APK link on an Android phone → download → open it → allow "Install unknown apps".
+> **Demo accounts:** tap **Mariem** on phone A and **Maram** on phone B on the login screen. Security PIN: **1234**.
+> The pitch deck link opens only for people it has been shared with.
+
+---
+
 **najda** (نجدة, "help / rescue") is a personal-safety app for Sousse. Hackathon MVP, built with React Native + Expo (SDK 58) + TypeScript, Supabase, and Leaflet/OpenStreetMap. Everything is **free with no credit card**.
 
 > Mariem walks home on Bd du 14 Janvier and gets robbed. The phone is grabbed → najda detects the shake → "Mariem, labes?" countdown → the robber doesn't know her code → a **silent alert** goes to her circle with her position → Maram gets "🚨 Mariem is in danger — 350 m from you" → taps **I'm going** and runs to her → Mariem taps **Rani labes — I'm safe** + code.
