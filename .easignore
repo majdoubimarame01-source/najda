@@ -1,0 +1,14 @@
+# Used by EAS instead of .gitignore. Unlike .gitignore, .env and google-services.json ARE uploaded
+# so the cloud build gets the Supabase keys and Firebase config.
+node_modules/
+.expo/
+dist/
+web-build/
+/ios
+/android
+*.jks
+*.p8
+*.p12
+*.key
+*.pem
+.claude/
