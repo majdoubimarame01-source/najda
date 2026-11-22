@@ -83,17 +83,31 @@ ok(r1?.status === 'responding' && r1?.responder_ids?.includes(MARAM), "Maram tap
 const seen1 = await waitFor(mariemEvents, (e) => e.type === 'UPDATE' && e.row.responder_ids?.includes(MARAM));
 ok(!!seen1, `Mariem's phone sees "Maram is on the way"${seen1 ? ` (${seen1.ms} ms)` : ''}`);
 
-// 4. Maram: "I'm with Mariem".
+// 4. Maram: "I'm with Mariem" -> the alert is CLOSED in the database.
 const { data: r2 } = await maram.rpc('arrive_alert', { p_alert: alert.id, p_user: MARAM });
 ok(r2?.arrived_ids?.includes(MARAM), 'Maram taps "I\'m with Mariem" -> arrived');
-const seen2 = await waitFor(mariemEvents, (e) => e.type === 'UPDATE' && e.row.arrived_ids?.includes(MARAM));
-ok(!!seen2, `Mariem's phone sees "Maram is with you"${seen2 ? ` (${seen2.ms} ms)` : ''}`);
+ok(r2?.status === 'resolved' && !!r2?.resolved_at, `Alert status is "resolved" in the DB (got "${r2?.status}")`);
+ok(r2?.lat === null && r2?.address === null, 'Location deleted when Maram arrives');
+const seen2 = await waitFor(mariemEvents, (e) => e.type === 'UPDATE' && e.row.status === 'resolved' && e.row.arrived_ids?.includes(MARAM));
+ok(!!seen2, `Mariem's phone sees "Maram is with you — alert closed"${seen2 ? ` (${seen2.ms} ms)` : ''}`);
+const { data: dbRow } = await mariem.from('alerts').select('status').eq('id', alert.id).single();
+ok(dbRow?.status === 'resolved', 'Re-read from the database: status = resolved');
 
-// 5. Mariem: "Rani labes" + PIN -> resolve, location wiped.
+// 5. Mariem's "Rani labes" after that is harmless (already closed).
 const { data: r3 } = await mariem.rpc('resolve_alert', { p_alert: alert.id });
-ok(r3?.status === 'resolved' && r3?.lat === null && r3?.address === null, 'Mariem resolves -> location deleted');
-const seen3 = await waitFor(maramEvents, (e) => e.type === 'UPDATE' && e.row.id === alert.id && e.row.status === 'resolved');
+ok(r3?.status === 'resolved' && r3?.lat === null, 'Mariem\'s "Rani labes" on the closed alert keeps it resolved');
+
+// 5b. Victim-side resolve still works on its own (no helper arrived).
+const { data: other } = await mariem
+  .from('alerts')
+  .insert({ user_id: MARIEM, circle_id: CIRCLE, type: 'braquage', status: 'active', lat: 35.8452, lng: 10.6152 })
+  .select()
+  .single();
+const { data: r5 } = await mariem.rpc('resolve_alert', { p_alert: other.id });
+ok(r5?.status === 'resolved' && r5?.lat === null, 'Mariem resolves alone with PIN -> resolved, location deleted');
+const seen3 = await waitFor(maramEvents, (e) => e.type === 'UPDATE' && e.row.id === other.id && e.row.status === 'resolved');
 ok(!!seen3, `Maram's phone sees "Mariem is safe"${seen3 ? ` (${seen3.ms} ms)` : ''}`);
+await mariem.from('alerts').delete().eq('id', other.id);
 
 // 6. A resolved alert can't be re-opened by a late "I'm going".
 const { data: r4 } = await maram.rpc('respond_alert', { p_alert: alert.id, p_user: MARAM });

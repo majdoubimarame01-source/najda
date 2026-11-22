@@ -2,6 +2,7 @@ import { Redirect } from 'expo-router';
 import { useEffect } from 'react';
 import { BackHandler, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AlertClosed } from '../components/AlertClosed';
 import { SafeResolver } from '../components/SafeResolver';
 import { isLocalId, nameOf } from '../lib/alerts';
 import { useApp } from '../lib/store';
@@ -22,6 +23,7 @@ export default function Silent() {
   }, []);
 
   if (!id) return <Redirect href="/" />;
+  if (alert?.status === 'resolved') return <AlertClosed alert={alert} />;
 
   const arrived = alert?.arrived_ids ?? [];
   const responders = (alert?.responder_ids ?? []).filter((r) => !arrived.includes(r)).map(nameOf);

@@ -1,6 +1,7 @@
 import { Redirect, router } from 'expo-router';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AlertClosed } from '../components/AlertClosed';
 import { SafeResolver } from '../components/SafeResolver';
 import { Btn, Icon } from '../components/ui';
 import { ALERT_LABEL, isLocalId, nameOf } from '../lib/alerts';
@@ -30,6 +31,7 @@ export default function Sent() {
   const members = useApp((s) => s.members);
   const alert = useAlert(id);
   if (!id) return <Redirect href="/" />;
+  if (alert?.status === 'resolved') return <AlertClosed alert={alert} />;
 
   const contacts = members.filter((m) => m.id !== me?.id).length;
   const sending = isLocalId(id);

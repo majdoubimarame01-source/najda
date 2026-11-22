@@ -37,7 +37,8 @@ create table if not exists public.alerts (
   responder_ids uuid[] not null default '{}'
 );
 
--- Helpers who reached the victim ("I'm with Mariem").
+-- Helper reached the victim ("I'm with Mariem"): the victim is no longer alone,
+-- so the alert is CLOSED and the location wiped (privacy: kept only while help is needed).
 alter table public.alerts add column if not exists arrived_ids uuid[] not null default '{}';
 
 create or replace function public.arrive_alert(p_alert uuid, p_user uuid)
@@ -45,7 +46,9 @@ returns public.alerts language sql as $$
   update public.alerts
      set arrived_ids = case when p_user = any(arrived_ids) then arrived_ids else array_append(arrived_ids, p_user) end,
          responder_ids = case when p_user = any(responder_ids) then responder_ids else array_append(responder_ids, p_user) end,
-         status = case when status = 'active' then 'responding' else status end
+         status = 'resolved',
+         resolved_at = now(),
+         lat = null, lng = null, address = null
    where id = p_alert and status <> 'resolved'
   returning *;
 $$;

@@ -170,7 +170,7 @@ export async function respondAlert(id: string) {
   if (data) getApp().upsertAlert(data as AlertRow);
 }
 
-/** Helper reached the victim ("I'm with Mariem"). Also counts as responding. */
+/** Helper reached the victim ("I'm with Mariem"): the alert is closed and the location wiped. */
 export async function arriveAlert(id: string) {
   const { me } = getApp();
   if (!me) return;
@@ -181,7 +181,11 @@ export async function arriveAlert(id: string) {
       ...cur,
       responder_ids: add(cur.responder_ids),
       arrived_ids: add(cur.arrived_ids),
-      status: cur.status === 'active' ? 'responding' : cur.status,
+      status: 'resolved',
+      resolved_at: new Date().toISOString(),
+      lat: null,
+      lng: null,
+      address: null,
     });
   }
   if (isLocalId(id) || !online()) return;
@@ -279,7 +283,13 @@ export async function notifySafe(row: AlertRow) {
   const prev = lastSafe.get(row.user_id) ?? 0;
   if (Date.now() - prev < 15_000) return;
   lastSafe.set(row.user_id, Date.now());
-  await showInfo(`${row.id}:safe`, `✅ ${nameOf(row.user_id)} is safe`, 'Rani labes — alert closed.');
+  const victim = nameOf(row.user_id);
+  const withHer = (row.arrived_ids ?? []).map(nameOf);
+  await showInfo(
+    `${row.id}:safe`,
+    `✅ ${victim} is safe`,
+    withHer.length ? `${withHer.join(' and ')} ${withHer.length > 1 ? 'are' : 'is'} with ${victim}. Alert closed.` : 'Rani labes — alert closed.',
+  );
 }
 
 export async function heartbeat() {
